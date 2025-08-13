@@ -9,9 +9,11 @@ interface RegisterProps {
 const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
 
   const { register, loading, user } = useAuth();
   const navigate = useNavigate();
@@ -25,6 +27,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+
     await register(email, password, fullName, username, phone);
   };
 
@@ -62,11 +71,26 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
 
-        <button type="submit" disabled={loading} onClick={onSwitchToLogin}>
+        {error && <p className="error">{error}</p>}
+
+        <button type="submit" disabled={loading}>
           {loading ? "Creating account..." : "Register"}
         </button>
       </form>
+
+      <p>
+        Already have an account?{" "}
+        <button type="button" onClick={onSwitchToLogin} className="switch-btn">
+          Login
+        </button>
+      </p>
     </div>
   );
 };

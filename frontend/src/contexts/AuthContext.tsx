@@ -24,80 +24,82 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    // ✅ Initialize from localStorage if exists
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const [loading, setLoading] = useState(false);
 
-  const confirmLogout = () => {
-    return window.confirm("Are you sure you want to log out?");
+  const confirmLogout = () => window.confirm("Are you sure you want to log out?");
+
+  const saveUser = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const login = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      // Simulate API call delay
-      await new Promise((res) => setTimeout(res, 1000));
+  setLoading(true);
+  try {
+    await new Promise((res) => setTimeout(res, 1000));
+    if (!email || !password) throw new Error("Email and password required");
 
-      // Simple validation (replace with real auth later)
-      if (!email || !password) throw new Error("Email and password required");
+    // Get registered users
+    const users = JSON.parse(localStorage.getItem("users") || "[]") as User[];
 
-      setUser({ email });
-    } catch (err) {
-      alert((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Find the user by email
+    const existingUser = users.find((u) => u.email === email);
+    if (!existingUser) throw new Error("User not found");
+
+    // Log in
+    setUser(existingUser);
+    localStorage.setItem("user", JSON.stringify(existingUser));
+  } catch (err) {
+    alert((err as Error).message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const register = async (
-    email: string,
-    password: string,
-    fullName?: string,
-    username?: string,
-    phone?: string
-  ) => {
-    setLoading(true);
-    try {
-      await new Promise((res) => setTimeout(res, 1000));
+  email: string,
+  password: string,
+  fullName?: string,
+  username?: string,
+  phone?: string
+) => {
+  setLoading(true);
+  try {
+    await new Promise((res) => setTimeout(res, 1000));
+    if (!email || !password) throw new Error("Email and password required");
 
-      if (!email || !password) throw new Error("Email and password required");
+    const newUser: User = { email, fullName, username, phone };
 
-      setUser({ email, fullName, username, phone });
-    } catch (err) {
-      alert((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Get existing users
+    const users = JSON.parse(localStorage.getItem("users") || "[]") as User[];
+
+    // Save new user
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
+    // Log in immediately after registration
+    setUser(newUser);
+    localStorage.setItem("user", JSON.stringify(newUser));
+  } catch (err) {
+    alert((err as Error).message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const logout = () => {
     if (confirmLogout()) {
       setUser(null);
+      localStorage.removeItem("user"); // ✅ remove from storage on logout
     }
   };
-
-  // 🛡 Logout on Back / Page Restore with confirmation
-  useEffect(() => {
-    const handleBackOrRestore = (event: Event) => {
-      if (confirmLogout()) {
-        setUser(null);
-      } else {
-        window.history.pushState(null, "", window.location.href);
-      }
-    };
-
-    window.addEventListener("popstate", handleBackOrRestore);
-    window.addEventListener("pageshow", (event) => {
-      if ((event as PageTransitionEvent).persisted) {
-        handleBackOrRestore(event);
-      }
-    });
-
-    window.history.pushState(null, "", window.location.href);
-
-    return () => {
-      window.removeEventListener("popstate", handleBackOrRestore);
-    };
-  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, loading }}>
