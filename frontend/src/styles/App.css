@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* General layout reset */
 * {
   margin: 0;
@@ -5,19 +7,20 @@
   box-sizing: border-box;
 }
 
-/* Body styling */
+/* Body styling - Don't override Tailwind backgrounds */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #f5f7fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  line-height: 1.5;
 }
 
-/* Centered page container */
-.page-container {
+/* Only apply page-container for auth pages, not dashboard */
+.auth-page .page-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #f5f7fa;
 }
 
 /* Card container for forms */
@@ -34,26 +37,37 @@ body {
   text-align: center;
   margin-bottom: 1.5rem;
   color: #4f46e5;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .auth-card input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 0.5rem 0;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .auth-card button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #4f46e5;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  font-weight: 500;
+  margin-top: 0.5rem;
 }
 
 .auth-card button:hover {
@@ -67,65 +81,124 @@ body {
   color: #4f46e5;
   cursor: pointer;
   font-size: 14px;
+  text-decoration: none;
 }
 
-/* Dashboard styling */
-.dashboard-container {
+.auth-card .switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Dashboard specific styles - minimal to avoid conflicts with Tailwind */
+.dashboard-page {
+  /* Let Tailwind handle all dashboard styling */
+}
+
+/* Legacy dashboard styles - use only if needed for old components */
+.legacy-dashboard-container {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.dashboard-header {
+.legacy-dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem;
 }
 
-.dashboard-header h1 {
+.legacy-dashboard-header h1 {
   color: #333;
+  font-size: 1.875rem;
+  font-weight: 700;
 }
 
-.logout-btn {
+.legacy-logout-btn {
   background-color: #ef4444;
   color: white;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
-.logout-btn:hover {
+.legacy-logout-btn:hover {
   background-color: #dc2626;
 }
 
-/* Stats grid */
-.stats-grid {
+/* Stats grid - legacy */
+.legacy-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.stat-card {
+.legacy-stat-card {
   background: white;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
+.legacy-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.legacy-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
   color: #4f46e5;
+  margin-bottom: 0.5rem;
 }
 
-.stat-label {
-  font-size: 0.9rem;
-  color: #777;
+.legacy-stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Utility classes that won't conflict with Tailwind */
+.smooth-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Error and success messages */
+.error-message {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
 }
