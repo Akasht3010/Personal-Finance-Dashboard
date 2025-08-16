@@ -88,11 +88,6 @@ body {
   text-decoration: underline;
 }
 
-/* Dashboard specific styles - minimal to avoid conflicts with Tailwind */
-.dashboard-page {
-  /* Let Tailwind handle all dashboard styling */
-}
-
 /* Legacy dashboard styles - use only if needed for old components */
 .legacy-dashboard-container {
   padding: 2rem;
